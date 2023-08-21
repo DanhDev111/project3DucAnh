@@ -131,13 +131,11 @@ class ProductServiceImpl implements ProductService {
 
     private void updateProductSizes(Product product, List<ProductSize> productSizes) {
 
-        for (ProductSize newSize : productSizes) {
-            if (newSize.getId() != null) {
+
                 product.getProductSizes().clear();
                 product.getProductSizes().addAll(productSizes);
-            }
-        }
-        product.setProductSizes(productSizes);
+
+
         // Gán lại danh sách kích thước đã cập nhật cho sản phẩm
         convert(product);
     }

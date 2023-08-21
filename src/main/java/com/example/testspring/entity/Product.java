@@ -26,13 +26,13 @@ public class Product extends TimeAuditable{
     private String image;
 
     @OneToMany(mappedBy = "product",cascade = CascadeType.ALL)
-    private List<ProductColor> productColorDTOs;
+    private List<ProductColor> productColors;
 
     @ManyToOne
     private Category category;
 
     @OneToMany(mappedBy = "product",cascade = CascadeType.ALL)
-    private List<ProductSize> productSizeDTOs;
+    private List<ProductSize> productSizes;
 
     //1 sản phẩm có nhiều màu(quantity) - trong mỗi mã màu có số lượng khác nhau(quantity)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
