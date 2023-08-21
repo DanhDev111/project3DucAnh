@@ -46,7 +46,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain config(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests()
-                .antMatchers("/admin/**","/cache/**")
+                .antMatchers("/cache/**")
+//                .antMatchers("/admin/**","/cache/**")
 //                .hasAnyRole("ROLE_ADMIN")
                 .hasAnyAuthority("ROLE_ADMIN","ROLE_SUBADMIN")
                 .antMatchers("/customer/**")

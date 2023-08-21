@@ -109,7 +109,7 @@ class ProductServiceImpl implements ProductService {
 //        updateProductColors(product, productDTO.getProductColors());
 
         // Cập nhật thông tin kích thước
-        updateProductSizes(product, productDTO.getProductSizes());
+//        updateProductSizes(product, productDTO.getProductSizes());
 
         // Lưu thay đổi vào cơ sở dữ liệu
         productRepo.save(product);

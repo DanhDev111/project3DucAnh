@@ -14,7 +14,8 @@ public class ProductSize {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY,cascade = {
-            CascadeType.ALL
+            CascadeType.ALL,
+            CascadeType.MERGE
     })
     private Size size;
 
