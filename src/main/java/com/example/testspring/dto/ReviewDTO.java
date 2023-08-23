@@ -12,15 +12,11 @@ import java.util.Date;
 
 @Data
 public class ReviewDTO {
-    private int id;
+    private Integer id;
+
     private Integer starNumber;
 
-
-    private Date reviewDate;
-
-
     private ProductDTO product;
-
 
     private UserDTO user;
 }

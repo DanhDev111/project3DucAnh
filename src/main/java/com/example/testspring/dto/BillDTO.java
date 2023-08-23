@@ -18,10 +18,13 @@ public class BillDTO {
 
     private UserDTO user;
 
+    private String status;
+
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm",timezone = "Asia/Ho_Chi_Minh")
     private Date createdAt;
 
-    @JsonManagedReference
+//    @JsonManagedReference
+    @JsonBackReference
     private List<BillItemDTO> billItems;
 
 }

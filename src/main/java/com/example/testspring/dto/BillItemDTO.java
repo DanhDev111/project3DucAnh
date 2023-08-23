@@ -14,7 +14,6 @@ public class BillItemDTO {
     //Mình sẽ không lấy cái attr
     // ở bên private List<BillItemDTO> billItems;
     @JsonIgnoreProperties("billItems")
-
     private BillDTO billDTO;
 
     private ProductDTO product;

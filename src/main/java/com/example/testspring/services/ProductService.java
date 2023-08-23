@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,10 +39,6 @@ public interface ProductService {
 class ProductServiceImpl implements ProductService {
     @Autowired
     ProductColorRepo productColorRepo;
-
-    @Autowired
-    ProductSizeRepo productSizeRepo;
-
     @Autowired
     SizeRepo sizeRepo;
     @Autowired
@@ -51,13 +48,7 @@ class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO create(ProductDTO productDTO) {
-        //        List<ProductColor> colorList = new ArrayList<>();
-//        if (productDTO.getProductColors() != null) {
-//            for (int i = 0; i < productDTO.getProductColors().size(); i++) {
-//                ProductColor color = productColorRepo.findById(productDTO.getProductColors().get(i).getId()).orElse(null);
-//                colorList.add(color);
-//            }
-//        }
+
         Product product = new Product();
         product.setName(productDTO.getName());
         product.setDescription(productDTO.getDescription());
@@ -71,23 +62,19 @@ class ProductServiceImpl implements ProductService {
             productColor.setProduct(product);
             productColors.add(productColor);
         }
-        productColorRepo.saveAll(productColors);
-
-        List<ProductSize> productSizes = new ArrayList<>();
-        for (ProductSize productSize : productDTO.getProductSizes()) {
-            productSize.setProduct(product);
-            productSizes.add(productSize);
-        }
-        productSizeRepo.saveAll(productSizes);
 
 
+        // Lấy thông tin Sizes từ DTO và lưu vào sản phẩm
+        List<SizeDTO> sizeDTOs = productDTO.getSizeDTOs();
+        List<Size> sizes = sizeDTOs.stream()
+                .map(sizeDTO -> sizeRepo.findById(sizeDTO.getId())
+                        .orElseThrow(() -> new EntityNotFoundException("Size not found")))
+                .collect(Collectors.toList());
         product.setProductColors(productColors);
-        product.setProductSizes(productSizes);
+        product.setSizes(sizes);
         productRepo.save(product);
 
 
-        //Tra ve id sau khi tao
-//        productDTO.setId(product.getId());
         return convert(product);
     }
 
@@ -103,13 +90,22 @@ class ProductServiceImpl implements ProductService {
         product.setImage(productDTO.getImage());
 
         product.setCategory(categoryRepo.findById(productDTO.getCategory().getId()).orElse(null));
-        //e copy mới sang nên bị null thôi, set them product vao productcolor nhe
+
 
         // Cập nhật thông tin màu sắc
-//        updateProductColors(product, productDTO.getProductColors());
+        updateProductColors(product, productDTO.getProductColors());
 
         // Cập nhật thông tin kích thước
-//        updateProductSizes(product, productDTO.getProductSizes());
+        List<SizeDTO> updatedSizeDTOs = productDTO.getSizeDTOs();
+        List<Size> updatedSizes = updatedSizeDTOs.stream()
+                .map(sizeDTO -> sizeRepo.findById(sizeDTO.getId())
+                        .orElseThrow(() -> new EntityNotFoundException("Size not found")))
+                .collect(Collectors.toList());
+        product.getSizes().clear();
+        product.getSizes().addAll(updatedSizes);
+        product.setSizes(updatedSizes);
+
+
 
         // Lưu thay đổi vào cơ sở dữ liệu
         productRepo.save(product);
@@ -117,27 +113,13 @@ class ProductServiceImpl implements ProductService {
         return convert(product);
     }
 
-//    private void updateProductColors(Product product, List<ProductColor> productColors) {
-//        for (ProductColor newColor : productColors) {
-//            if (newColor.getId() != null) {
-//                product.getProductColors().clear();
-//                productColors = new ArrayList<>();
-//                product.getProductColors().add(newColor);
-//            }
-//        }
-//        product.setProductColors(productColors);
-//        convert(product);
-//    }
+    private void updateProductColors(Product product, List<ProductColor> productColors) {
+        for (ProductColor productColor : productColors) {
+            productColor.setProduct(product);
+        }
 
-    private void updateProductSizes(Product product, List<ProductSize> productSizes) {
-
-
-                product.getProductSizes().clear();
-                product.getProductSizes().addAll(productSizes);
-
-
-        // Gán lại danh sách kích thước đã cập nhật cho sản phẩm
-        convert(product);
+        product.getProductColors().clear();
+        product.getProductColors().addAll(productColors);
     }
 
     @Override

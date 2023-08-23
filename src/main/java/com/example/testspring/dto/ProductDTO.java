@@ -34,7 +34,7 @@ public class ProductDTO {
     @JsonFormat(pattern = "dd/MM/yyyy",timezone = "Asia/Ho_Chi_Minh")
     private Date createdDate;
 
-    private List<ProductSize> productSizes;
+    private List<SizeDTO> sizeDTOs;
 
     private List<ProductColor> productColors;
 

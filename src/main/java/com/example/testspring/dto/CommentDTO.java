@@ -12,13 +12,11 @@ import java.util.Date;
 
 @Data
 public class CommentDTO {
-    private int id;
-    private String comment;
+    private Integer id;
 
-    private Date commentDate;
+    private String comment;
 
     private ProductDTO product;
 
-    @JoinColumn(name = "commenter_id")
     private UserDTO user;
 }

@@ -12,14 +12,10 @@ public class ProductColor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = {
-            CascadeType.ALL
-    })
+    @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = {
-            CascadeType.MERGE
-    })
+    @ManyToOne(fetch = FetchType.LAZY)
     private Color color;
     //ứng với mỗi màu có 1 số lượng và 1 hình ảnh khác nhau
     // mỗi màu có danh sách(List) hình ảnh khác nhau

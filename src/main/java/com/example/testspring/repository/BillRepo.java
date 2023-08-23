@@ -24,4 +24,12 @@ public interface BillRepo extends JpaRepository<Bill,Integer> {
             + " FROM Bill b GROUP BY month(b.createdAt), year(b.createdAt) ")
     List<BillStatisticDTO> thongKeBill2();
 
+    @Query("SELECT p.name,SUM(bi.quantity) AS totalSoldQuanitty FROM Bill b " +
+            "JOIN b.billItems bi " +
+            "JOIN bi.product p " +
+            "WHERE function('MONTH',b.createdAt) =:month " +
+            "GROUP BY p.name,p.id" +
+            " ORDER BY totalSoldQuanitty Desc"
+    )
+    List<Object[]> thongKeSPbanchay(@Param("month") int month);
 }

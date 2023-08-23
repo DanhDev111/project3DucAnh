@@ -31,8 +31,12 @@ public class Product extends TimeAuditable{
     @ManyToOne
     private Category category;
 
-    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL)
-    private List<ProductSize> productSizes;
+    @ManyToMany
+    @JoinTable(name = "product_size"
+                ,joinColumns = @JoinColumn(name = "product_id")
+            ,inverseJoinColumns = @JoinColumn(name = "size_id")
+    )
+    private List<Size> Sizes;
 
     //1 sản phẩm có nhiều màu(quantity) - trong mỗi mã màu có số lượng khác nhau(quantity)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")

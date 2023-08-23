@@ -9,6 +9,10 @@ import com.example.testspring.entity.User;
 import com.example.testspring.repository.CategoryRepo;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +46,7 @@ class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = "category-search",allEntries = true)
     public void create(CategoryDTO categoryDTO) {
         Category category = new ModelMapper().map(categoryDTO, Category.class);
         categoryRepo.save(category);
@@ -49,6 +54,15 @@ class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict (cacheNames = "category-search",allEntries = true)
+            },
+            put = {
+                    @CachePut(cacheNames = "category",key = "#categoryDTO.id")
+            }
+    )
+    @CachePut(cacheNames = "category",key = "#categoryDTO.id")
     public void update(CategoryDTO categoryDTO) {
         Category category = categoryRepo.findById(categoryDTO.getId()).orElseThrow(NoResultException::new);
         if (category!=null){
@@ -59,12 +73,17 @@ class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "category",key = "#id"),
+            @CacheEvict(cacheNames = "category2",allEntries = true)
+    })
     public void delete(int id) {
         categoryRepo.deleteById(id);
     }
 
     @Override
     @Transactional
+    @Cacheable(cacheNames = "category",key = "#id",unless = "#result == null ")
     public CategoryDTO getById(int id) {
         Category category = categoryRepo.findById(id).orElseThrow(NoResultException::new);
         if (category != null) {

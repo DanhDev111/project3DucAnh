@@ -1,12 +1,8 @@
 package com.example.testspring.services;
 
 import com.example.testspring.dto.ProductColorDTO;
-import com.example.testspring.dto.ProductDTO;
-import com.example.testspring.dto.ProductSizeDTO;
-import com.example.testspring.dto.SizeDTO;
 import com.example.testspring.entity.Product;
 import com.example.testspring.entity.ProductColor;
-import com.example.testspring.entity.Size;
 import com.example.testspring.repository.ProductColorRepo;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
