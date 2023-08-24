@@ -17,8 +17,6 @@ import java.util.List;
 
 
 @RestController
-
-
 public class BillController {
     @Autowired
     BillService billService;

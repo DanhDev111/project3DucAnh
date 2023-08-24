@@ -29,28 +29,28 @@ public class ReviewService {
     @Autowired
     UserRepo userRepo;
     public void create(ReviewDTO reviewDTO){
-        Review comment = new Review();
+        Review review = new Review();
         Product product = productRepo.findById(reviewDTO.getProduct().getId()).orElseThrow(NoResultException::new);
         User user = userRepo.findById(reviewDTO.getUser().getId()).orElseThrow(NoResultException::new);
-        comment.setProduct(product);
-        comment.setUser(user);
+        review.setProduct(product);
+        review.setUser(user);
 
-        comment.setStarNumber(reviewDTO.getStarNumber());
-        reviewRepo.save(comment);
+        review.setStarNumber(reviewDTO.getStarNumber());
+        reviewRepo.save(review);
     }
     public void update(ReviewDTO reviewDTO){
-        Review comment = reviewRepo.findById(reviewDTO.getId()).orElseThrow(NoResultException::new);
+        Review review = reviewRepo.findById(reviewDTO.getId()).orElseThrow(NoResultException::new);
         Product product = productRepo.findById(reviewDTO.getProduct().getId()).orElseThrow(NoResultException::new);
-        comment.setStarNumber(reviewDTO.getStarNumber());
-        comment.setProduct(product);
-        comment.setUser(userRepo.findById(reviewDTO.getUser().getId()).orElseThrow(NoResultException::new));
-        reviewRepo.save(comment);
+        review.setStarNumber(reviewDTO.getStarNumber());
+        review.setProduct(product);
+        review.setUser(userRepo.findById(reviewDTO.getUser().getId()).orElseThrow(NoResultException::new));
+        reviewRepo.save(review);
     }
     public void delete(int id){
         reviewRepo.deleteById(id);
     }
-    public ReviewDTO convert(Review comment){
-        return new ModelMapper().map(comment,ReviewDTO.class);
+    public ReviewDTO convert(Review review){
+        return new ModelMapper().map(review,ReviewDTO.class);
     }
     public ReviewDTO getById(int id){
 
