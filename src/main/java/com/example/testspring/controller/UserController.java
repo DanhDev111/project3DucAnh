@@ -4,6 +4,7 @@ import com.example.testspring.dto.*;
 
 import com.example.testspring.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -28,6 +29,9 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @Value("${upload.folder}")
+    private String UPLOAD_FOLDER;
+
 
     @GetMapping("/list")
     public ResponseDTO<List<UserDTO>> list() {
@@ -45,12 +49,12 @@ public class UserController {
         return ResponseDTO.<PageDTO<UserDTO>>builder().status(200).data(pageUser).build();
     }
 
-    @GetMapping("/download")
+    @GetMapping("/download/{filename}")
     public void download(
-            @RequestParam("fileName") String fileName,
+            @PathVariable("filename") String filename,
             HttpServletResponse response
     ) throws IllegalStateException, IOException {
-        File file = new File("F:/" + fileName);
+        File file = new File(UPLOAD_FOLDER + filename);
         Files.copy(file.toPath(), response.getOutputStream());
     }
 
@@ -59,7 +63,6 @@ public class UserController {
     public ResponseDTO<Void> newUser(
             @ModelAttribute @Valid UserDTO userDTO
     ) throws IOException {
-        final String UPLOAD_FOLDER = "F:/file/user";
         if (userDTO.getFile() != null && !userDTO.getFile().isEmpty()) {
             if (!(new File(UPLOAD_FOLDER).exists())) {
                 new File(UPLOAD_FOLDER).mkdirs();
@@ -67,7 +70,7 @@ public class UserController {
             String filename = userDTO.getFile().getOriginalFilename();
             // lay dinh dang file
             String extension = filename.substring(filename.lastIndexOf("."));
-            // tao ten moi
+            // tao ten moi tránh
             String newFilename = UUID.randomUUID().toString() + extension;
 
             File newFile = new File(UPLOAD_FOLDER + newFilename);
@@ -98,13 +101,19 @@ public class UserController {
 
     @PutMapping(value = "/")
     public ResponseDTO<UserDTO> update(@ModelAttribute @Valid UserDTO userDTO) throws IOException {
-        if (!userDTO.getFile().isEmpty()) {
+        if ( userDTO.getFile()!=null &&!userDTO.getFile().isEmpty()) {
             String filename = userDTO.getFile().getOriginalFilename();
-            // Luu lai file vào ở cùng máy chủ
-            File saveFile = new File("F:/" + filename);
-            userDTO.getFile().transferTo(saveFile);
-            //lay ten file luu xuong DATABASE
-            userDTO.setAvatarURL(filename);
+            // lay dinh dang file
+            String extension = filename.substring(filename.lastIndexOf("."));
+            // tao ten moi
+            String newFilename = UUID.randomUUID().toString() + extension;
+
+            File newFile = new File(UPLOAD_FOLDER + newFilename);
+
+            userDTO.getFile().transferTo(newFile);
+
+            userDTO.setAvatarURL(newFilename);// save to db
+
         }
         userService.update(userDTO);
         return ResponseDTO.<UserDTO>builder()
