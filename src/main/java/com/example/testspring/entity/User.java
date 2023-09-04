@@ -3,6 +3,7 @@ package com.example.testspring.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Generated;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
@@ -16,6 +17,7 @@ import java.util.List;
 //ORM framework: Object - Record table
 // JPA - Hibernate
 // mình sẽ không dùng JDBC SQL nữa
+
 @Data //mình dùng cái này để có thể muốn generate constructor với get and set method
 @Table (name = "user") //map to table SQL
 @Entity //BEAN new project
@@ -59,5 +61,6 @@ public class User extends TimeAuditable{
 
     @Column(unique = true)
     private String phoneNumber;
+
 
 }

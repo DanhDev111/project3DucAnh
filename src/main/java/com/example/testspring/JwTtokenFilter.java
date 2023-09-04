@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-@Slf4j
 public class JwTtokenFilter extends OncePerRequestFilter {
     @Autowired
     JwTokenService jwTokenService;

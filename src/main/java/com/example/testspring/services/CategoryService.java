@@ -26,73 +26,61 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public interface CategoryService {
-    void create(CategoryDTO categoryDTO);
+//public interface CategoryService {
+//    void create(CategoryDTO categoryDTO);
+//
+//    void update(CategoryDTO categoryDTO);
+//
+//    void delete(int id);
+//
+//    CategoryDTO getById(int id);
+//
+//    List<CategoryDTO> readAll();
+//
+//    PageDTO<CategoryDTO> searchByName(SearchDTO searchDTO);
+//}
 
-    void update(CategoryDTO categoryDTO);
-
-    void delete(int id);
-
-    CategoryDTO getById(int id);
-
-    List<CategoryDTO> readAll();
-
-    PageDTO<CategoryDTO> searchByName(SearchDTO searchDTO);
-}
 @Service
-class CategoryServiceImpl implements CategoryService {
+public class CategoryService {
     @Autowired
     CategoryRepo categoryRepo;
 
-    @Override
     @Transactional
-    @CacheEvict(cacheNames = "category-search",allEntries = true)
+    @CacheEvict(cacheNames = "category-search", allEntries = true)
     public void create(CategoryDTO categoryDTO) {
         Category category = new ModelMapper().map(categoryDTO, Category.class);
         categoryRepo.save(category);
+        //Tra ve id sau khi tao
+        categoryDTO.setId(category.getId());
     }
 
-    @Override
     @Transactional
-    @Caching(
-            evict = {
-                    @CacheEvict (cacheNames = "category-search",allEntries = true)
-            },
-            put = {
-                    @CachePut(cacheNames = "category",key = "#categoryDTO.id")
-            }
-    )
-    @CachePut(cacheNames = "category",key = "#categoryDTO.id")
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "categories", key = "#categoryDTO.id"),
+            @CacheEvict(cacheNames = "category-search", allEntries = true)
+    })
     public void update(CategoryDTO categoryDTO) {
         Category category = categoryRepo.findById(categoryDTO.getId()).orElseThrow(NoResultException::new);
-        if (category!=null){
-            category.setName(category.getName());
-        }
+
+        category.setName(category.getName());
         categoryRepo.save(category);
     }
 
-    @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(cacheNames = "category",key = "#id"),
-            @CacheEvict(cacheNames = "category2",allEntries = true)
+            @CacheEvict(cacheNames = "categories", key = "#id"),
+            @CacheEvict(cacheNames = "category-search", allEntries = true)
     })
     public void delete(int id) {
         categoryRepo.deleteById(id);
     }
 
-    @Override
-    @Transactional
-    @Cacheable(cacheNames = "category",key = "#id",unless = "#result == null ")
+    @Cacheable(cacheNames = "categories", key = "#id", unless = "#result == null")
     public CategoryDTO getById(int id) {
         Category category = categoryRepo.findById(id).orElseThrow(NoResultException::new);
-        if (category != null) {
-            return convert(category);
-        }
-        return null;
+        return convert(category);
     }
 
-    @Override
     @Transactional
     public List<CategoryDTO> readAll() {
         List<Category> categories = categoryRepo.findAll();
@@ -101,35 +89,34 @@ class CategoryServiceImpl implements CategoryService {
         return categories.stream().map(u -> convert(u)).collect(Collectors.toList());
     }
 
-    public CategoryDTO convert(Category category) {
+    private CategoryDTO convert(Category category) {
         return new ModelMapper().map(category, CategoryDTO.class);
     }
 
-    @Override
     public PageDTO<CategoryDTO> searchByName(SearchDTO searchDTO) {
         Sort sortBy = Sort.by("name").ascending();
 
 //        if (sortBy !=null && !sortBy.isEmpty()){
 //
 //        }
-        if (StringUtils.hasText(searchDTO.getSortedField())){
-            sortBy=  Sort.by(searchDTO.getSortedField()).descending();
+        if (StringUtils.hasText(searchDTO.getSortedField())) {
+            sortBy = Sort.by(searchDTO.getSortedField()).descending();
         }
-        if (searchDTO.getCurrentPage()==null){
+        if (searchDTO.getCurrentPage() == null) {
             searchDTO.setCurrentPage(0);
         }
-        if (searchDTO.getSize()==null){
+        if (searchDTO.getSize() == null) {
             searchDTO.setSize(5);
         }
-        if (searchDTO.getKeyword()==null){
+        if (searchDTO.getKeyword() == null) {
             searchDTO.setKeyword("");
         }
 
         Pageable pageable =
-                PageRequest.of(searchDTO.getCurrentPage(),searchDTO.getSize(),sortBy);
-        Page<Category> page = categoryRepo.searchByName("%"+searchDTO.getKeyword()+"%", pageable);
+                PageRequest.of(searchDTO.getCurrentPage(), searchDTO.getSize(), sortBy);
+        Page<Category> page = categoryRepo.searchByName("%" + searchDTO.getKeyword() + "%", pageable);
 
-        List<CategoryDTO> categoryDTOS = page.get().map(u ->convert(u)).collect(Collectors.toList());
+        List<CategoryDTO> categoryDTOS = page.get().map(u -> convert(u)).collect(Collectors.toList());
 
         return PageDTO.<CategoryDTO>builder()
                 .totalPages(page.getTotalPages())

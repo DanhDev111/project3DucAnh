@@ -10,6 +10,7 @@ import com.example.testspring.repository.RoleRepo;
 import com.example.testspring.repository.UserRepo;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
 //@Component
 // Tuy tao the nao cung dc dugn de tao bean
 @Service //tao Bean: new UserService, qly SpringContainer
-public class UserService implements UserDetailsService {
+public class UserService  {
     @Autowired
     UserRepo userRepo;
 
@@ -144,7 +145,7 @@ public class UserService implements UserDetailsService {
                 .build();
     }
 
-    @Override
+
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User userEntity = userRepo.findByUsername(username);
