@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
-    <artifactId>SpringProject2</artifactId>
+    <artifactId>SpringProject3</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>testSpring</name>
     <description>testSpring</description>
@@ -110,6 +110,15 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.33</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-suite-api -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite-api</artifactId>
+            <version>1.8.0</version>
+            <scope>test</scope>
+        </dependency>
+
 
 
         <dependency>
